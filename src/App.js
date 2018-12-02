@@ -11,24 +11,62 @@ import './App.css'
 
 class App extends Component {
     state = {
-        show: false,
+        panels: []
     }
 
-    onClick = e => {
-        e.preventDefault()
-        this.setState({
-            show: 1,
+    componentWillMount() {
+        // fetch data from API
+    }
+
+    panelUpdate = e => {
+        console.log('panelUpdate-->', e)
+
+    }
+    
+    /**
+     * Adds new panel
+     */
+    panelAdd = e => {
+        console.log('panelAdd-->', e)
+
+        const payload = {
+            panelId: this.state.panels.length,
+            panelName: e.target.value
+        }
+        fetch('/api/addPanel', {
+            body: JSON.stringify(payload),
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            }
         })
+        .then((response) => {
+            this.setState((prevState) => ({
+                panels: [
+                    ...prevState.panels,
+                    payload
+                ]
+            }))
+        })
+
+        e.target.value = ''
+        
     }
 
     render() {
+        const {panels} = this.state
         return (
             <div className="App">
-                {/*
-          
-        
-        */}
-                Hey ! I said a!asdasd
+                {/* Existing editable Panels */}
+                {panels.map((panel) => (
+                    <div>
+                        <input onBlur={this.panelUpdate} data-panel-id={panel.panelId} value={panel.panelName} placeholder="Add panel name" />
+                    </div>
+                ))}
+                {/* Add new panel? */}
+                <div>
+                    <input onBlur={this.panelAdd} placeholder="Add panel name" />
+                </div>
             </div>
         )
     }

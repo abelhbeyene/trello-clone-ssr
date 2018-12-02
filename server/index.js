@@ -1,8 +1,9 @@
 import express from 'express';
 import Loadable from 'react-loadable'
+import {connect} from 'mongoose'
 
-// we'll talk about this in a minute:
 import serverRenderer from './middleware/renderer';
+import apiController from './api'
 
 const PORT = 4000;
 const path = require('path');
@@ -10,6 +11,9 @@ const path = require('path');
 // initialize the application and create the routes
 const app = express();
 const router = express.Router();
+
+// Connect to DB
+connect('mongodb://localhost:27017/trelloCloneDB')
 
 // root (/) should always serve our server rendered page
 router.use('^/$', serverRenderer);
@@ -19,6 +23,10 @@ router.use(express.static(
     path.resolve(__dirname, '..', 'build'),
     { maxAge: '30d' },
 ));
+
+
+// APIs
+apiController(app)
 
 // tell the app to use the above rules
 app.use(router);
