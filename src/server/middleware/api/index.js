@@ -1,4 +1,4 @@
-import apiModel from '../mongo'
+import {panel} from '../../mongo'
 const bodyParser = require('body-parser')
 
 
@@ -8,7 +8,7 @@ export default (app) => {
 
     // returns data needed for initial view
     app.get('/api/panelList', (req, res) => {
-        apiModel.find({}, (err, result) => {
+        panel.find({}, (err, result) => {
             res.send(result)
         })
     })
@@ -18,10 +18,10 @@ export default (app) => {
         const {panelId, panelName} = req.body
         console.log(panelId, panelName);
         if (panelId !== undefined && panelName !== undefined) {
-            apiModel({panelId,panelName})
+            panel({panelId,panelName})
                 .save((err, result) => {
                     if (err) console.log(err);
-                    res.send(`Just finished adding! ${result}`)
+                    res.send(result)
                 })
         } else {
             res.send('Fail!')

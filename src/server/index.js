@@ -3,7 +3,7 @@ import Loadable from 'react-loadable'
 import {connect} from 'mongoose'
 
 import serverRenderer from './middleware/renderer';
-import apiController from './api'
+import apiController from './middleware/api'
 
 const PORT = 4000;
 const path = require('path');
@@ -20,7 +20,7 @@ router.use('^/$', serverRenderer);
 
 // other static resources should just be served as they are
 router.use(express.static(
-    path.resolve(__dirname, '..', 'build'),
+    path.resolve(__dirname, '..', '..', 'build'),
     { maxAge: '30d' },
 ));
 

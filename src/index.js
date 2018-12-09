@@ -7,7 +7,10 @@ import * as serviceWorker from './serviceWorker'
 
 window.onload = () => {
     Loadable.preloadReady().then(() => {
-        ReactDOM.hydrate(<App />, document.getElementById('root'))
+        const _preLoadedState = window.__PRELOADED_STATE !== undefined ? window.__PRELOADED_STATE : {}
+        ReactDOM.hydrate(<App {..._preLoadedState} />, document.getElementById('root'))
+        // delete the global var passed down from server. Only needed for initial mount
+        delete window.__PRELOADED_STATE
     })
 }
 
