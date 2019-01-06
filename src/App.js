@@ -28,14 +28,8 @@ class App extends Component {
     static fetchAction = () => {
         return apiUtil.get('/api/panelList')
             .then(jsonResponse => {
-                console.log('-->', 'API CALL');
-                const _activePanelValue = {}
-                jsonResponse.forEach(({panelId, panelName}) => {
-                    _activePanelValue[panelId] = panelName
-                })
                 return {
-                    panels: jsonResponse,
-                    activePanelValue: _activePanelValue
+                    panels: jsonResponse
                 }
             })
     }
@@ -44,7 +38,7 @@ class App extends Component {
         if (this.props.isServerSide) return
         App.fetchAction()
             .then((res) => {
-                this.setState(...res)
+                this.setState({...res})
             })
     }
 
@@ -52,16 +46,52 @@ class App extends Component {
         console.log('componentDidMount-->', this.props, this.state);
     }
 
-    panelChange = (panel) => {
+    /**
+     * Sets this.state.activePanelValue so input can update as user types
+     */
+    setActivePanel = ({panelId, panelName}) => {
         this.setState({
-            activePanelValue: panel.panelName
+            activePanelValue: {
+                [panelId]: panelName
+            }
         })
     }
 
-    panelUpdate = (panel) => {
-        console.log('panelUpdate-->', panel)
-        
+    /**
+     * Updates this.state.activePanelValue so input can update as user types
+     */
+    panelChange = (e, panel) => {
+        this.setState({
+            activePanelValue: {
+                [panel.panelId]: e.target.value
+            }
+        })
+    }
 
+    /**
+     * Update the value in DB
+     */
+    panelUpdate = (e, {panelId, panelName}) => {
+        console.log('panelUpdate-->', panelId, panelName)
+        const newPanelName = this.state.activePanelValue[panelId]
+        const payload = {
+            panelId: panelId,
+            panelName: newPanelName
+        }
+
+        // same? don't update
+        if (newPanelName === panelName) {
+            return
+        }
+
+        apiUtil.put('/api/updatePanel', payload)
+            .then((jsonResponse) => {
+                const _panels = [...this.state.panels]
+                _panels[panelId] = jsonResponse.pop()
+                this.setState((prevState) => ({
+                    panels: _panels
+                }))
+            })
     }
     
     /**
@@ -99,7 +129,13 @@ class App extends Component {
                 {/* Existing editable Panels */}
                 {panels.map((panel) => (
                     <div>
-                        <input onBlur={() => this.panelUpdate(panel)} onChange={this.panelChange} value={activePanelValue[panel.panelId]} placeholder="Add panel name" />
+                        <input
+                            onFocus={() => {this.setActivePanel(panel)}}
+                            onBlur={(e) => {this.panelUpdate(e, panel)}}
+                            onChange={(e) => {this.panelChange(e, panel)}}
+                            value={activePanelValue[panel.panelId] || panel.panelName}
+                            // placeholder="Add panel name"
+                        />
                     </div>
                 ))}
                 {/* Add new panel? */}
