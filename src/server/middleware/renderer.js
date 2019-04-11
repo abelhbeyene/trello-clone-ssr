@@ -3,9 +3,9 @@ import ReactDOMServer from 'react-dom/server'
 import Loadable from 'react-loadable'
 
 // import our main App component
-import App from '../../../src/App'
+import App from '../../../src/client/App'
 import { checkExistsWithTimeout } from '../utils'
-import apiUtil from '../../../src/api-utils';
+import apiUtil from '../../../src/shared/api-utils';
 
 const path = require('path')
 const fs = require('fs')

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Loadable from 'react-loadable'
 import logo from './logo.svg'
 import './App.css'
-import apiUtil from './api-utils'
+import apiUtil from '../shared/api-utils'
 import PropTypes from 'prop-types'
 // import {ssrRenderingComplete} from './server/middleware/renderer'
 
